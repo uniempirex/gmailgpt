@@ -1,6 +1,7 @@
 import os
 import pickle
 import base64
+import openai
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
@@ -66,7 +67,7 @@ def extract_email_body(email_details):
 
 def generate_response(email_body):
     """
-    Generate a response based on the email body content.
+    Generate a response based on the email body content using ChatGPT.
     
     Args:
     - email_body (str): The content of the email.
@@ -74,9 +75,15 @@ def generate_response(email_body):
     Returns:
     - str: A response generated for the email.
     """
-    # For now, let's return a simple static response.
-    # Later, this can be replaced with a dynamic response using ChatGPT or another method.
-    return "Thank you for your email. We'll get back to you shortly!"
+    openai.api_key = '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'  # Replace with your OpenAI API key
+
+    response = openai.Completion.create(
+      model="gpt-3.5-turbo-instruct",
+      prompt=f"reply this email with the most natural language and the most relevant response: {email_body}",
+      max_tokens=150  # Adjust as needed
+    )
+    
+    return response.choices[0].text.strip()
 
 def send_reply(service, original_email, response_text):
     """
